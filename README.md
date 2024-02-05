@@ -49,10 +49,10 @@ where each field includes attributes:
     * **`items`** is a list required for `enum` or `bitmasklist` types.
     * **`fields`** is a list required for `array` and `bitmasklist` types,
     defining nested fields.
-    * **`optional`** *optional* for any type flags the field as being present
-    or not, and consumes 1 bit of payload to indicate presence.
-    * **`fixed`** *optional* for variable length fields string, data, array
-    to reserve/pad the maximum data length to a specific payload size.
+    * **`optional`** is *optional* for any type; flags the field as being
+    present or not, and consumes 1 bit of payload to indicate presence.
+    * **`fixed`** is *optional* for variable length fields `string`, `data`,
+    `array` to reserve/pad the maximum data length to a specific payload size.
 
 The XML format was historically uploaded to the Viasat/Inmarsat or
 ORBCOMM/SkyWave web service API gateways, typically with extension `*.idpmsg`.

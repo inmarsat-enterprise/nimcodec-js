@@ -6,7 +6,12 @@
     "test": "mocha --reporter spec"
   },
   "keywords": [
-    "iot", "iiot", "satellite", "Viasat", "Inmarsat", "Orbcomm"
+    "iot",
+    "iiot",
+    "satellite",
+    "Viasat",
+    "Inmarsat",
+    "Orbcomm"
   ],
   "repository": {
     "type": "git",
@@ -20,6 +25,8 @@
   },
   "devDependencies": {
     "chai": "^4.4.1",
+    "jaguarjs-jsdoc": "^1.1.0",
+    "jsdoc": "^4.0.2",
     "mocha": "^10.2.0",
     "rewire": "^7.0.0"
   }
