@@ -1,0 +1,74 @@
+{
+  "messageDefinition": {
+    "services": [
+      {
+        "name": "testService",
+        "codecServiceId": 129,
+        "mobileOriginatedMessages": [
+          {
+            "name": "testMo",
+            "codecMessageId": 1,
+            "fields": [
+              {
+                "name": "testBool",
+                "type": "boolField"
+              },
+              {
+                "name": "testEnum",
+                "type": "enumField",
+                "size": 2,
+                "items": ["ONE", "TWO", "THREE"]
+              },
+              {
+                "name": "testUint",
+                "type": "uintField",
+                "size": 16
+              },
+              {
+                "name": "testInt",
+                "type": "intField",
+                "size": 25
+              },
+              {
+                "name": "testString",
+                "type": "stringField",
+                "size": 128
+              },
+              {
+                "name": "testDataOptFix",
+                "type": "dataField",
+                "size": 32,
+                "optional": true,
+                "fixed": true
+              },
+              {
+                "name": "testArray",
+                "type": "arrayField",
+                "size": 128,
+                "fields": [
+                  {
+                    "name": "paramName",
+                    "type": "stringField",
+                    "size": 16
+                  },
+                  {
+                    "name": "paramValue",
+                    "type": "uintField",
+                    "size": 8
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "mobileTerminatedMessages": [
+          {
+            "name": "testMt",
+            "codecMessageId": 1,
+            "fields": []
+          }
+        ]
+      }
+    ]
+  }
+}

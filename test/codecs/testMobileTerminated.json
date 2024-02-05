@@ -1,0 +1,10 @@
+{
+    "codecServiceId": 0,
+    "codecMessageId": 100,
+    "fields": [
+        {
+            "name": "metricsPeriod",
+            "value": "LastFullDay"
+        }
+    ]
+}

@@ -1,0 +1,264 @@
+{
+  "messageDefinition": {
+    "services": [
+      {
+        "name": "modem",
+        "serviceKey": 0,
+        "uplinkMessages": [
+          {
+            "name": "location",
+            "messageKey": 72,
+            "fields": [
+              {
+                "name": "fixStatus",
+                "type": "enum",
+                "items": [
+                  "Invalid",
+                  "Valid"
+                ],
+                "size": 8
+              },
+              {
+                "name": "latitude",
+                "type": "int",
+                "description": "Latitude in 0.001 minutes",
+                "size": 24
+              },
+              {
+                "name": "longitude",
+                "type": "int",
+                "description": "Longitude in 0.001 minutes",
+                "size": 25
+              },
+              {
+                "name": "altitude",
+                "type": "int",
+                "description": "Altitude in meters",
+                "size": 15
+              },
+              {
+                "name": "speed",
+                "type": "uint",
+                "description": "Speed in km/h",
+                "size": 8
+              },
+              {
+                "name": "heading",
+                "type": "uint",
+                "description": "Heading from North in 2-degree increments",
+                "size": 8
+              },
+              {
+                "name": "dayOfMonth",
+                "type": "uint",
+                "size": 5
+              },
+              {
+                "name": "minuteOfDay",
+                "type": "uint",
+                "size": 11
+              }
+            ]
+          },
+          {
+            "name": "txMetricsReport",
+            "messageKey": 100,
+            "fields": [
+              {
+                "name": "period",
+                "type": "enum",
+                "size": 8,
+                "items": [
+                  "SinceLastReset",
+                  "LastPartialMinute",
+                  "LastFullMinute",
+                  "LastPartialHour",
+                  "LastFullHour",
+                  "LastPartialDay",
+                  "LastFullDay"
+                ]
+              },
+              {
+                "name": "txMetrics",
+                "type": "bitkeylist",
+                "size": 8,
+                "items": [
+                  "ack",
+                  "0533",
+                  "0550",
+                  "0575",
+                  "reserved",
+                  "1033",
+                  "1050"
+                ],
+                "fields": [
+                  {
+                    "name": "packetsTotal",
+                    "type": "uintField",
+                    "size": 32
+                  },
+                  {
+                    "name": "packetsSuccess",
+                    "type": "uintField",
+                    "size": 32
+                  },
+                  {
+                    "name": "packetsFailed",
+                    "type": "uintField",
+                    "size": 32
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "systemConfigReport",
+            "messageKey": 135,
+            "fields": [
+              {
+                "name": "channelConfigInfo",
+                "type": "array",
+                "size": 127,
+                "fields": [
+                  {
+                    "name": "structureId",
+                    "type": "uint",
+                    "size": 12
+                  },
+                  {
+                    "name": "structureSubId",
+                    "type": "uint",
+                    "size": 8
+                  },
+                  {
+                    "name": "configStatus",
+                    "type": "uint",
+                    "size": 3
+                  },
+                  {
+                    "name": "reserved",
+                    "type": "uint",
+                    "size": 1
+                  }
+                ]
+              },
+              {
+                "name": "subchannelInfo",
+                "type": "array",
+                "size": 127,
+                "fields": [
+                  {
+                    "name": "structureId",
+                    "type": "uint",
+                    "size": 12
+                  },
+                  {
+                    "name": "structureStatus",
+                    "type": "uint",
+                    "size": 1
+                  },
+                  {
+                    "name": "reserved",
+                    "type": "uint",
+                    "size": 3
+                  }
+                ]
+              },
+              {
+                "name": "bhSetInfo",
+                "type": "array",
+                "size": 127,
+                "fields": [
+                  {
+                    "name": "structureId",
+                    "type": "uint",
+                    "size": 12
+                  },
+                  {
+                    "name": "structureStatus",
+                    "type": "uint",
+                    "size": 1
+                  },
+                  {
+                    "name": "reserved",
+                    "type": "uint",
+                    "size": 3
+                  }
+                ]
+              },
+              {
+                "name": "coverageDefInfo",
+                "type": "array",
+                "size": 127,
+                "fields": [
+                  {
+                    "name": "structureId",
+                    "type": "uint",
+                    "size": 12
+                  },
+                  {
+                    "name": "structureSubId",
+                    "type": "uint",
+                    "size": 7
+                  },
+                  {
+                    "name": "conciseEditionFlag",
+                    "type": "uint",
+                    "size": 1
+                  },
+                  {
+                    "name": "version",
+                    "type": "uint",
+                    "size": 8
+                  },
+                  {
+                    "name": "structureStatus",
+                    "type": "uint",
+                    "size": 1
+                  },
+                  {
+                    "name": "reserved",
+                    "type": "uint",
+                    "size": 3
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "downlinkMessages": [
+          {
+            "name": "getLocation",
+            "messageKey": 72,
+            "fields": []
+          },
+          {
+            "name": "getTxMetrics",
+            "messageKey": 100,
+            "fields": [
+              {
+                "name": "period",
+                "type": "enumField",
+                "size": 8,
+                "items": [
+                  "SinceLastReset",
+                  "LastPartialMinute",
+                  "LastFullMinute",
+                  "LastPartialHour",
+                  "LastFullHour",
+                  "LastPartialDay",
+                  "LastFullDay"
+                ]
+              }
+            ]
+          },
+          {
+            "name": "systemConfigGet",
+            "messageKey": 135,
+            "fields": []
+          }
+        ]
+      }
+    ]
+  }
+}

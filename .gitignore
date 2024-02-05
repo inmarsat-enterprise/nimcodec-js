@@ -1,0 +1,8 @@
+.DS_Store
+node_modules
+.vscode
+.env
+logs
+docs/make*
+docs/Make*
+out

@@ -1,0 +1,26 @@
+{
+  "name": "nimcodec",
+  "version": "0.1.0",
+  "description": "Encoder/decoder for satellite IoT using Non-IP Messages",
+  "scripts": {
+    "test": "mocha --reporter spec"
+  },
+  "keywords": [
+    "iot", "iiot", "satellite", "Viasat", "Inmarsat", "Orbcomm"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/inmarsat-enterprise/nimcodec-js.git"
+  },
+  "author": "geoff.bruce-payne@inmarsat.com",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "bitwise": "^2.2.1",
+    "xml-js": "^1.6.11"
+  },
+  "devDependencies": {
+    "chai": "^4.4.1",
+    "mocha": "^10.2.0",
+    "rewire": "^7.0.0"
+  }
+}

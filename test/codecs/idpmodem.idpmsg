@@ -1,0 +1,228 @@
+<MessageDefinition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Services>
+    <Service>
+      <Name>modem</Name>
+      <SIN>0</SIN>
+      <ForwardMessages>
+        <Message>
+          <Name>locationGet</Name>
+          <MIN>72</MIN>
+          <Fields />
+        </Message>
+        <Message>
+          <Name>txMetricsGet</Name>
+          <MIN>100</MIN>
+          <Fields>
+            <Field xsi:type="EnumField">
+              <Name>period</Name>
+              <Items>
+                <string>SinceLastReset</string>
+                <string>LastPartialMinute</string>
+                <string>LastFullMinute</string>
+                <string>LastPartialHour</string>
+                <string>LastFullHour</string>
+                <string>LastPartialDay</string>
+                <string>LastFullDay</string>
+              </Items>
+              <Size>8</Size>
+            </Field>
+          </Fields>
+        </Message>
+        <Message>
+          <Name>systemConfigGet</Name>
+          <MIN>135</MIN>
+          <Fields />
+        </Message>
+      </ForwardMessages>
+      <ReturnMessages>
+        <Message>
+          <Name>location</Name>
+          <MIN>72</MIN>
+          <Fields>
+            <Field xsi:type="EnumField">
+              <Name>fixStatus</Name>
+              <Items>
+                <string>Invalid</string>
+                <string>Valid</string>
+              </Items>
+              <Size>8</Size>
+            </Field>
+            <Field xsi:type="SignedIntField">
+              <Name>latitude</Name>
+              <Description>Latitude in 0.001 minutes</Description>
+              <Size>24</Size>
+            </Field>
+            <Field xsi:type="SignedIntField">
+              <Name>longitude</Name>
+              <Description>Longitude in 0.001 minutes</Description>
+              <Size>25</Size>
+            </Field>
+            <Field xsi:type="SignedIntField">
+              <Name>altitude</Name>
+              <Description>Altitude in meters</Description>
+              <Size>15</Size>
+            </Field>
+            <Field xsi:type="UnsignedIntField">
+              <Name>speed</Name>
+              <Description>Speed in km/h</Description>
+              <Size>8</Size>
+            </Field>
+            <Field xsi:type="UnsignedIntField">
+              <Name>heading</Name>
+              <Description>Heading from North in 2-degree increments</Description>
+              <Size>8</Size>
+            </Field>
+            <Field xsi:type="UnsignedIntField">
+              <Name>dayOfMonth</Name>
+              <Size>5</Size>
+            </Field>
+            <Field xsi:type="UnsignedIntField">
+              <Name>minuteOfDay</Name>
+              <Size>11</Size>
+            </Field>
+          </Fields>
+        </Message>
+        <Message>
+          <Name>txMetricsReport</Name>
+          <MIN>100</MIN>
+          <Fields>
+            <Field xsi:type="EnumField">
+              <Name>period</Name>
+              <Items>
+                <string>SinceLastReset</string>
+                <string>LastPartialMinute</string>
+                <string>LastFullMinute</string>
+                <string>LastPartialHour</string>
+                <string>LastFullHour</string>
+                <string>LastPartialDay</string>
+                <string>LastFullDay</string>
+              </Items>
+              <Size>8</Size>
+            </Field>
+            <Field xsi:type="BitKeyListField">
+              <Name>txMetrics</Name>
+              <Size>8</Size>
+              <Items>
+                <string>ack</string>
+                <string>0533</string>
+                <string>0550</string>
+                <string>0575</string>
+                <string>reserved</string>
+                <string>1033</string>
+                <string>1050</string>
+              </Items>
+              <Fields>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>packetsTotal</Name>
+                  <Size>32</Size>
+                </Field>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>packetsSuccess</Name>
+                  <Size>32</Size>
+                </Field>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>packetsFailed</Name>
+                  <Size>32</Size>
+                </Field>
+              </Fields>
+            </Field>
+          </Fields>
+        </Message>
+        <Message>
+          <Name>systemConfigReport</Name>
+          <MIN>135</MIN>
+          <Fields>
+            <Field xsi:type="ArrayField">
+              <Name>channelConfigInfo</Name>
+              <Fields>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>structureId</Name>
+                  <Size>12</Size>
+                </Field>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>structureSubId</Name>
+                  <Size>8</Size>
+                </Field>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>configStatus</Name>
+                  <Size>3</Size>
+                </Field>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>reserved</Name>
+                  <Size>1</Size>
+                </Field>
+              </Fields>
+              <Size>127</Size>
+            </Field>
+            <Field xsi:type="ArrayField">
+              <Name>subchannelInfo</Name>
+              <Fields>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>structureId</Name>
+                  <Size>12</Size>
+                </Field>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>structureStatus</Name>
+                  <Size>1</Size>
+                </Field>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>reserved</Name>
+                  <Size>3</Size>
+                </Field>
+              </Fields>
+              <Size>127</Size>
+            </Field>
+            <Field xsi:type="ArrayField">
+              <Name>bhSetInfo</Name>
+              <Fields>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>structureId</Name>
+                  <Size>12</Size>
+                </Field>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>structureStatus</Name>
+                  <Size>1</Size>
+                </Field>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>reserved</Name>
+                  <Size>3</Size>
+                </Field>
+              </Fields>
+              <Size>127</Size>
+            </Field>
+            <Field xsi:type="ArrayField">
+              <Name>coverageDefInfo</Name>
+              <Fields>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>structureId</Name>
+                  <Size>12</Size>
+                </Field>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>structureSubId</Name>
+                  <Size>7</Size>
+                </Field>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>conciseEditionFlag</Name>
+                  <Size>1</Size>
+                </Field>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>version</Name>
+                  <Size>8</Size>
+                </Field>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>structureStatus</Name>
+                  <Size>1</Size>
+                </Field>
+                <Field xsi:type="UnsignedIntField">
+                  <Name>reserved</Name>
+                  <Size>3</Size>
+                </Field>
+              </Fields>
+              <Size>127</Size>
+            </Field>
+          </Fields>
+        </Message>
+      </ReturnMessages>
+    </Service>
+  </Services>
+</MessageDefinition>
