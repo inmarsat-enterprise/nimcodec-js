@@ -1,0 +1,92 @@
+[
+    {
+        "description": "A basic health/config status message for NB-NTN devices. Minimum size 9 bytes. Maximum size 249 bytes.",
+        "direction": "UPLINK",
+        "name": "heartbeat",
+        "messageKey": 1,
+        "fields": [
+            {
+                "name": "imsi",
+                "description": "IMSI of the NTN SIM, not required if using NIDD or devUid",
+                "type": "uint",
+                "size": 50,
+                "optional": true
+            },
+            {
+                "name": "devUid",
+                "description": "Unique device ID, not required if using NIDD or imsi. Max 32 characters.",
+                "type": "string",
+                "size": 32,
+                "optional": true,
+                "fixed": false
+            },
+            {
+                "name": "psk",
+                "description": "Optional Pre-Shared Key when not using NIDD or DTLS. Must be accompanied by imsi or devUid.",
+                "type": "string",
+                "size": 63,
+                "optional": true,
+                "fixed": false
+            },
+            {
+                "name": "secOfDay",
+                "type": "uint",
+                "size": 17
+            },
+            {
+                "name": "location",
+                "type": "struct",
+                "optional": true,
+                "fields": [
+                    { "name": "latitude", "type": "int", "size": 18, "calc": "v/1000" },
+                    { "name": "longitude", "type": "int", "size": 19, "calc": "v/1000" }
+                ]
+            },
+            {
+                "name": "tac",
+                "description": "NB-NTN Tracking Area Code",
+                "type": "uint",
+                "size": 16
+            },
+            {
+                "name": "rsrp",
+                "type": "int",
+                "size": 8
+            },
+            {
+                "name": "rsrq",
+                "type": "int",
+                "size": 8
+            },
+            {
+                "name": "sinr",
+                "type": "int",
+                "size": 7
+            },
+            {
+                "name": "rssi",
+                "type": "int",
+                "size": 8,
+                "optional": true
+            },
+            {
+                "name": "psmConfig",
+                "type": "struct",
+                "optional": true,
+                "fields": [
+                    { "name": "tauT3412", "type": "bitmask", "size": 8 },
+                    { "name": "actT3324", "type": "bitmask", "size": 8 }
+                ]
+            },
+            {
+                "name": "edrxConfig",
+                "type": "struct",
+                "optional": true,
+                "fields": [
+                    { "name": "edrxCycle", "type": "bitmask", "size": 4 },
+                    { "name": "edrxPtw", "type": "bitmask", "size": 4 }
+                ]
+            }
+        ]
+    }
+]
