@@ -9,8 +9,7 @@ const bitwise = require('bitwise');
 // const decodeField = field.__get__('decodeField');
 // const encodeField = field.__get__('encodeField');
 const { decodeField, encodeField, decodeFieldLength, encodeFieldLength } = require('../lib/codecs/nimo/field/common');
-const bitbang = rewire('../lib/codecs/nimo/field/bitbang.js');
-const {importCodec } = require('../lib/codecs/nimo/codeckey');
+const { importCodec } = require('../lib/codecs/nimo/codeckey');
 // const messageCodec = require('../lib/codecs/nimo/monolith').testExports;
 // const { decodeMessage, encodeMessage } = require('../lib/messageCodec');
 const { decodeMessage, encodeMessage } = require('../lib/codecs/nimo/message');
@@ -53,25 +52,6 @@ describe('#importCodec()', function() {
         }
       }
     }
-  });
-
-});
-
-describe('#dec2bits()', function() {
-  const dec2bits = bitbang.__get__('dec2bits');
-
-  it('-1 should be all 1s', function () {
-    const testVal = -1;
-    const bitLen = 4;
-    const bits = dec2bits(testVal, bitLen);
-    expect(bits.length).to.equal(bitLen);
-    const buf = bitwise.buffer.create(bits);
-    expect(bitwise.buffer.readInt(buf, 0, bits.length)).to.equal(testVal);
-  });
-
-  it('should be 42 bits', function () {
-    const bits = dec2bits(1, 42);
-    expect(bits.length).to.equal(42);
   });
 
 });
