@@ -21,9 +21,11 @@
   "license": "Apache-2.0",
   "dependencies": {
     "bitwise": "^2.2.1",
+    "mathjs": "^13.2.0",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
+    "@types/node": "^22.7.4",
     "chai": "^4.4.1",
     "jaguarjs-jsdoc": "^1.1.0",
     "jsdoc": "^4.0.2",
