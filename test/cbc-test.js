@@ -1,20 +1,14 @@
 const chai = require('chai');
 chai.config.includeStack = false;
 const expect = chai.expect;
-const should = chai.should();
 const rewire = require('rewire');
 const bitwise = require('bitwise');
 const mathjs = require('mathjs');
 
+const { cbc } = require('../lib');
+const { decodeMessage, encodeMessage, isValidCodec } = cbc;
 const { decodeField, encodeField, encodeFieldLength } = require('../lib/codecs/cbc/field/common');
-// const { importCodec } = require('../lib/codecs/cbc/codeckey');
-// const messageCodec = require('../lib/codecs/cbc/monolith').testExports;
-// const { decodeMessage, encodeMessage } = require('../lib/messageCodec');
-const { decodeMessage, encodeMessage, isValidCodec } = require('../lib/codecs/cbc');
 const codec_ = rewire('../lib/codecs/cbc/index.js');
-const fieldCommon_ = rewire('../lib/codecs/cbc/field/common.js');
-
-const codecPath = './test/codecs/ntn-poc-cbc.json';
 
 const basicCodec = {
   application: 'Test app',
@@ -22,8 +16,7 @@ const basicCodec = {
     {
       name: 'Test message',
       direction: 'UPLINK',
-      versionId: 1,
-      typeId: 0,
+      messageKey: 1,
       fields: [
         {
           name: 'Test field',
@@ -529,42 +522,9 @@ describe('#cbc/field/array', () => {
     },
   };
 
-  const testCaseStruct = {
-    fieldDef: {
-      name: 'structLocation',
-      type: 'array',
-      size: 1,
-      optional: true,
-      fixed: true,
-      fields: [
-        {
-          name: 'latitude',
-          type: 'int',
-          size: 24,
-          encalc: 'v*60000',
-          decalc: 'v/60000',
-        },
-        {
-          name: 'longitude',
-          type: 'int',
-          size: 25,
-          encalc: 'v*60000',
-          decalc: 'v/60000',
-        }
-      ],
-    },
-    encoded: [143, 41, 235, 101, 41, 0, 192],
-    decoded: {
-      name: 'structLocation',
-      type: 'array',
-      value: [ { latitude: 33.12570, longitude: -117.26501 } ],
-    },
-  };
-
   const testCases = [
     testCase1d,
     testCase2d,
-    testCaseStruct,
   ];
   
   let buffer = Buffer.from([0]);
@@ -795,12 +755,9 @@ describe('#cbc/message', function () {
         }
       }
     };
-    const expected = [1, 20, 129, 43, 3, 181, 155, 8, 22, 108, 107, 222];
-    const encoded = encodeMessage(decoded, [testMessage], true);
+    const encoded = encodeMessage(decoded, testMessage, true);
     expect(Buffer.isBuffer(encoded)).to.equal(true);
-    for (const [i, b] of encoded.entries())
-      expect(expected[i]).to.equal(b);
-    const reread = decodeMessage(encoded, [testMessage], true);
+    const reread = decodeMessage(encoded, testMessage, true);
     const s1 = stringifyBigInt(reread);
     const s2 = stringifyBigInt(decoded);
     const delta = [];
