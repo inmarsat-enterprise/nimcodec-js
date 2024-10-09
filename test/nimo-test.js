@@ -1,23 +1,18 @@
 const chai = require('chai');
 chai.config.includeStack = false;
 const expect = chai.expect;
-const should = chai.should();
-const rewire = require('rewire');
+// const should = chai.should();
+// const rewire = require('rewire');
 const bitwise = require('bitwise');
 
-// const field = rewire('../lib/codecs/nimo/field/common.js');
-// const decodeField = field.__get__('decodeField');
-// const encodeField = field.__get__('encodeField');
-const { decodeField, encodeField, decodeFieldLength, encodeFieldLength } = require('../lib/codecs/nimo/field/common');
-const { importCodec } = require('../lib/codecs/nimo/codeckey');
-// const messageCodec = require('../lib/codecs/nimo/monolith').testExports;
-// const { decodeMessage, encodeMessage } = require('../lib/messageCodec');
-const { decodeMessage, encodeMessage } = require('../lib/codecs/nimo/message');
+const { nimo } = require('../lib');
+const { decodeMessage, encodeMessage, importCodec } = nimo;
+const { decodeField, encodeField, encodeFieldLength } = require('../lib/codecs/nimo/field/common');
 
 const idpmsgPath = './test/codecs/idpmodem.idpmsg';
 const modemCodecPath = './test/codecs/idpmodem.json';
 
-describe('#importCodec()', function() {
+describe('#nimo/importCodec()', function() {
   const serviceKeys = ['serviceKey', 'name'];
   const messageKeys = ['messageKey', 'name', 'fields'];
   const fieldKeys = ['name', 'type'];
@@ -56,7 +51,7 @@ describe('#importCodec()', function() {
 
 });
 
-describe('#encodeFieldLength()', function() {
+describe('#nimo/encodeFieldLength()', function() {
   // const encodeFieldLength = field.__get__('encodeFieldLength');
   let buffer = Buffer.from([0]);
   let offset = 0;
@@ -81,7 +76,7 @@ describe('#encodeFieldLength()', function() {
   });
 });
 
-describe('#Boolean Field', function() {
+describe('#nimo/Boolean Field', function() {
   const testField = {
     name: "boolTest",
     type: "bool",
@@ -114,7 +109,7 @@ describe('#Boolean Field', function() {
 
 });
 
-describe('#Enum Field', function() {
+describe('#nimo/Enum Field', function() {
   const testField = {
     name: "testEnum",
     type: "enumField",
@@ -147,7 +142,7 @@ describe('#Enum Field', function() {
   
 });
 
-describe('#Int Field', function () {
+describe('#nimo/Int Field', function () {
   const testField = {
     name: "testInt",
     type: "intField",
@@ -186,7 +181,7 @@ describe('#Int Field', function () {
 
 });
 
-describe('#Uint Field', function () {
+describe('#nimo/Uint Field', function () {
   const testField = {
     name: "testUint",
     type: "uintField",
@@ -226,7 +221,7 @@ describe('#Uint Field', function () {
 
 });
 
-describe('#String Field', function() {
+describe('#nimo/String Field', function() {
   const testField = {
     name: "variableString",
     type: "stringField",
@@ -283,7 +278,7 @@ describe('#String Field', function() {
 
 });
 
-describe('#Data Field', function() {
+describe('#nimo/Data Field', function() {
   const testField = {
     name: "variableData",
     type: "dataField",
@@ -336,7 +331,7 @@ describe('#Data Field', function() {
 
 });
 
-describe('#Array Field', function() {
+describe('#nimo/Array Field', function() {
   const testCase1d = {
     fieldDef: {
       name: 'array1d',
@@ -429,7 +424,7 @@ describe('#Array Field', function() {
 
 });
 
-describe('#Bitkeylist Field', function() {
+describe('#nimo/Bitkeylist Field', function() {
   const testCase1 = {
     fieldDef: {
       name: 'testBitkey',
@@ -538,7 +533,7 @@ const testMessages = [
   tcTxMetricsData,
 ];
 
-describe('#Message', function () {
+describe('#nimo/Message', function () {
   
   const messageKeys = ['name', 'serviceKey', 'messageKey', 'fields'];
 
