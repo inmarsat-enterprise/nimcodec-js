@@ -1,5 +1,5 @@
 {
-  "messageDefinition": {
+  "nimoCodecKey": {
     "services": [
       {
         "name": "modem",
