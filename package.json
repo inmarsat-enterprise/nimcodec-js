@@ -1,6 +1,6 @@
 {
   "name": "nimcodec",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Encoder/decoder for satellite IoT using Non-IP Messages",
   "scripts": {
     "test": "mocha --reporter spec"
