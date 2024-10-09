@@ -7,11 +7,19 @@ const { isInt, int2bits, extractBits, appendBits, appendBytes } = require('../li
 
 describe('#/bitman/isInt()', () => {
   
-  it('should return true for valid range of integer', () => {
-    const testCases = [-1, 2**64-1, -(2**64/2)];
+  it('should return true for valid range of int32', () => {
+    const testCases = [-1, 2**32-1, -(2**32/2)];
     for (const tc of testCases) {
       expect(isInt(tc)).to.equal(true);
     }
+  });
+
+  it('should return false for int64 not passed as bigint', () => {
+    expect(isInt(2**64-1)).to.equal(false);
+  });
+
+  it('should return true for int64 passed as bigint', () => {
+    expect(isInt(2n**64n-1n)).to.equal(true);
   });
 
   it('should return true for numerical string when allowString is set', () => {
