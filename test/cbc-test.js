@@ -311,9 +311,10 @@ describe('#cbc/field/uint', () => {
     const testBigInt = {
       name: 'testBigInt',
       type: 'uint',
+      optional: true,
       size: 50,
     };
-    let testVal = 901980020000123;
+    let testVal = 999999999999999n;
     ({buffer, offset} = encodeField(testBigInt, testVal, buffer, 0));
     expect(buffer).to.have.length(7);
     let {decoded} = decodeField(testBigInt, buffer, 0);
@@ -808,6 +809,29 @@ describe('#cbc/message', function () {
         delta.push(i);
     }
     expect(delta).to.have.length(0);
+  });
+
+  it('should encode a CoAP message', () => {
+    const msgCodec = require('./codecs/ntn-poc-cbc-coap.json').messages[0];
+    const decoded = {
+      direction: msgCodec.direction,
+      messageKey: msgCodec.messageKey,
+      name: msgCodec.name,
+      fields: {
+        coapPayloadMarker: 0xFF,
+        imsi: 999999999999999n,
+        secOfDay: 0,
+        tac: 0xABCD,
+        rsrp: 99,
+        rsrq: 31,
+        sinr: 31,
+      }
+    }
+    // let imsiEncoded = [241, 175, 212, 152, 207, 255, 224];
+    const encoded = encodeMessage(decoded, msgCodec, true);
+    expect(Buffer.isBuffer(encoded)).equals(true);
+    const {decoded: readback} = decodeMessage(encoded, msgCodec, true);
+    expect(decoded).to.be.an('object');
   });
 
 });
