@@ -7,8 +7,19 @@
             "description": "A basic health/config status message for NB-NTN devices. Minimum size 9 bytes. Maximum size 249 bytes.",
             "direction": "UPLINK",
             "name": "heartbeat",
+            "coapVersion": 1,
+            "coapType": 1,
+            "coapTokenLength": 0,
+            "coapCodeClass": 0,
+            "coapCodeMethod": 2,
             "messageKey": 4097,
             "fields": [
+                {
+                    "name": "coapPayloadMarker",
+                    "description": "Always set to 0xFF",
+                    "type": "uint",
+                    "size": 8
+                },
                 {
                     "name": "imsi",
                     "description": "IMSI of the NTN SIM, not required if using NIDD or devUid.",
