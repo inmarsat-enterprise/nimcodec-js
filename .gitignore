@@ -6,3 +6,4 @@ logs
 docs/make*
 docs/Make*
 out
+*-secret.json

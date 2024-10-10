@@ -22,6 +22,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "bitwise": "^2.2.1",
+    "dotenv": "^16.4.5",
     "mathjs": "^13.2.0",
     "xml-js": "^1.6.11"
   },
