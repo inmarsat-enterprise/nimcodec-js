@@ -7,35 +7,52 @@ const mathjs = require('mathjs');
 
 const { cbc } = require('../lib');
 const { decodeMessage, encodeMessage, isValidCodec } = cbc;
-const { decodeField, encodeField, encodeFieldLength } = require('../lib/codecs/cbc/field/common');
+const { decodeField, encodeField, encodeFieldLength, decodeFieldLength } = require('../lib/codecs/cbc/field/common');
 const codec_ = rewire('../lib/codecs/cbc/index.js');
-
-const basicCodec = {
-  application: 'Test app',
-  messages: [
-    {
-      name: 'Test message',
-      direction: 'UPLINK',
-      messageKey: 1,
-      fields: [
-        {
-          name: 'Test field',
-          type: 'int',
-          size: 8,
-        }
-      ]
-    }
-  ],
-};
+const { bitman } = require('../lib');
+const { appendBits, int2bits } = bitman;
 
 describe('#cbc/isValidCodec()', () => {
 
   const isValidFieldDef_ = codec_.__get__('isValidFieldDef_');
 
-  it('should validate meta', () => {
+  const basicCodec = {
+    application: 'Test app',
+    messages: [
+      {
+        name: 'Test message',
+        direction: 'UPLINK',
+        messageKey: 49152,
+        fields: [
+          {
+            name: 'Test field',
+            type: 'int',
+            size: 8,
+          }
+        ]
+      }
+    ],
+  };
+  
+  it('should return true for valid codec', () => {
     expect(isValidCodec(basicCodec)).to.equal(true);
+  });
+
+  it('should return false for messageKey out of range', () => {
+    const invalid = Object.assign({}, basicCodec);
+    invalid.messages[0].messageKey = 0;
+    expect(isValidCodec(invalid)).to.equal(false);
+  });
+
+  it('should return false for empty messages', () => {
     const invalid = Object.assign({}, basicCodec);
     invalid.messages = [];
+    expect(isValidCodec(invalid)).to.equal(false);
+  });
+
+  it('should return false for empty fields', () => {
+    const invalid = Object.assign({}, basicCodec);
+    invalid.messages[0].fields = [];
     expect(isValidCodec(invalid)).to.equal(false);
   });
 
@@ -136,17 +153,17 @@ describe('#cbc/isValidCodec()', () => {
 
 });
 
-describe('#cbc/common/encodeFieldLength()', () => {
-  let buffer = Buffer.from([0]);
-  let offset = 0;
+describe('#cbc/common/fieldLength', () => {
   
-  it('should encode 8 bits', () => {
+  it('should encode 8 bits for value < 128', () => {
     const size = 4;
-    buffer = Buffer.from([0]);
-    offset = 0;
+    let buffer = Buffer.from([0]);
+    let offset = 0;
     ({buffer, offset} = encodeFieldLength(size, buffer, offset));
     expect(buffer.length).to.equal(1);
     expect(bitwise.buffer.readUInt(buffer, 1, 7)).to.equal(size);
+    const { length } = decodeFieldLength(buffer, 0);
+    expect(length).to.equal(size);
   });
 
   it('should encode 16 bits with high bit set', () => {
@@ -157,6 +174,8 @@ describe('#cbc/common/encodeFieldLength()', () => {
     expect(buffer.length).to.equal(2);
     expect(bitwise.buffer.readUInt(buffer, 1, 15)).to.equal(size);
     expect(bitwise.buffer.read(buffer, 0, 1)[0]).to.equal(1);
+    const { length } = decodeFieldLength(buffer, 0);
+    expect(length).to.equal(size);
   });
 });
 
@@ -165,10 +184,10 @@ describe('#cbc/field/bool', () => {
     name: 'boolTest',
     type: 'bool',
   };
-  let buffer = Buffer.from([0]);
-  let offset = 0;
   
   it('should encode a boolean field', function() {
+    let buffer = Buffer.from([0]);
+    let offset = 0;
     const testValues = [true, false];
     const startBufLen = buffer.length;
     for (const testVal of testValues) {
@@ -180,8 +199,8 @@ describe('#cbc/field/bool', () => {
   });
 
   it('should decode a boolean field', function() {
-    buffer = Buffer.from([128]);
-    offset = 0;
+    let buffer = Buffer.from([128]);
+    let offset = 0;
     let startOff = offset;
     let decoded;
     ({decoded, offset} = decodeField(testField, buffer, offset));
@@ -199,11 +218,11 @@ describe('#cbc/field/enum', () => {
     size: 2,
     enum: {1: 'ONE', 2: 'TWO', 3: 'THREE'},
   };
-  let buffer = Buffer.from([0]);
-  let offset = 0;
 
   it('should encode an enumField', () => {
-    const testVal = 'TWO';
+    let buffer = Buffer.from([0]);
+    let offset = 0;
+      const testVal = 'TWO';
     const startBufLen = buffer.length;
     const startOff = offset;
     ({buffer, offset} = encodeField(testField, testVal, buffer, offset));
@@ -213,8 +232,8 @@ describe('#cbc/field/enum', () => {
   });
 
   it('should decode an enumField', () => {
-    buffer = Buffer.from([64]);   // 0b01000000
-    offset = 0;
+    let buffer = Buffer.from([64]);   // 0b01000000
+    let offset = 0;
     let startOff = offset;
     let decoded;
     ({decoded, offset} = decodeField(testField, buffer, offset));
@@ -231,11 +250,11 @@ describe('#cbc/field/int', () => {
     type: "intField",
     size: 4,
   };
-  let buffer = Buffer.from([0]);
-  let offset = 0;
 
   it('should encode negative numbers', () => {
-    let startOff;
+    let buffer = Buffer.from([0]);
+    let offset = 0;
+      let startOff;
     const testVals = [-1, -5];
     for (const testVal of testVals) {
       startOff = offset;
@@ -245,6 +264,8 @@ describe('#cbc/field/int', () => {
   });
 
   it('should error if the number is too big for size', () => {
+    let buffer = Buffer.from([0]);
+    let offset = 0;
     let startOff;
     const testVals = [-(2**testField.size / 2)-1, 2**testField.size];
     for (const testVal of testVals) {
@@ -256,7 +277,7 @@ describe('#cbc/field/int', () => {
 
   it('should decode a negative number', () => {
     const testVal = -5;
-    buffer = Buffer.from([testVal << (8 - testField.size)]);
+    let buffer = Buffer.from([testVal << (8 - testField.size)]);
     let {decoded} = decodeField(testField, buffer, 0);
     expect(decoded.value).is.equal(testVal);
   });
@@ -269,10 +290,10 @@ describe('#cbc/field/uint', () => {
     type: "uintField",
     size: 4,
   };
-  let buffer = Buffer.from([0]);
-  let offset = 0;
 
   it('should encode positive numbers', () => {
+    let buffer = Buffer.from([0]);
+    let offset = 0;
     let startOff;
     const testVals = [1, 2**testField.size - 1];
     for (const testVal of testVals) {
@@ -284,6 +305,8 @@ describe('#cbc/field/uint', () => {
   });
 
   it('should error if the number is negative or too big for size', () => {
+    let buffer = Buffer.from([0]);
+    let offset = 0;
     let startOff;
     const testVals = [-1, 2**testField.size];
     for (const testVal of testVals) {
@@ -295,7 +318,7 @@ describe('#cbc/field/uint', () => {
 
   it('should decode an unsigned integer', () => {
     const testVal = 1;
-    buffer = Buffer.from([testVal << (8 - testField.size)]);
+    let buffer = Buffer.from([testVal << (8 - testField.size)]);
     let {decoded} = decodeField(testField, buffer, 0);
     expect(decoded.value).to.equal(testVal);
   });
@@ -308,7 +331,8 @@ describe('#cbc/field/uint', () => {
       size: 50,
     };
     let testVal = 999999999999999n;
-    ({buffer, offset} = encodeField(testBigInt, testVal, buffer, 0));
+    let buffer = Buffer.from([0]);
+    ({buffer} = encodeField(testBigInt, testVal, buffer, 0));
     expect(buffer).to.have.length(7);
     let {decoded} = decodeField(testBigInt, buffer, 0);
     expect(decoded.value).to.equal(BigInt(testVal));
@@ -371,12 +395,10 @@ describe('#cbc/field/string', () => {
     type: "stringField",
     size: 32,
   };
-  let buffer = Buffer.from([0]);
-  let offset = 0;
   
   it('should encode a basic string', () => {
-    buffer = Buffer.from([0]);
-    offset = 0;
+    let buffer = Buffer.from([0]);
+    let offset = 0;
     const startOff = offset;
     const testVal = 'Test string';
     const lBytes = testVal.length < 128 ? 1 : 2;
@@ -387,8 +409,8 @@ describe('#cbc/field/string', () => {
   });
 
   it('should pad a fixed length string', () => {
-    buffer = Buffer.from([0]);
-    offset = 0;
+    let buffer = Buffer.from([0]);
+    let offset = 0;
     testField.fixed = true;
     const startOff = offset;
     const testVal = 'Test string';
@@ -398,24 +420,24 @@ describe('#cbc/field/string', () => {
     expect(buffer.toString('utf8', lBytes).slice(0, testVal.length)).to.equal(testVal);
   });
 
-  it('should append a string a non-byte boundary', () => {
-    buffer = Buffer.from([0]);
-    offset = 0;
-    const startOff = 3;
+  it('should append a string a non-byte boundary (run separate for buffer.length)', () => {
+    let buffer = Buffer.from([]);
+    let offset = 3;
+    const startOff = offset;
     const testVal = 'Test string';
     const lBytes = testVal.length < 128 ? 1 : 2;
-    ({buffer, offset} = encodeField(testField, testVal, buffer, startOff));
+    ({buffer, offset} = encodeField(testField, testVal, buffer, offset));
     expect(buffer.length).to.equal(lBytes + testVal.length + 1);
     const eBits = bitwise.buffer.read(buffer, startOff + lBytes * 8, testVal.length * 8);
     expect(bitwise.buffer.create(eBits).toString()).to.equal(testVal);
   });
 
-  it('should decode a string field', () => {
+  it('should decode a string field (run separate for buffer.length)', () => {
     const testStr = 'Test';
     const te = new TextEncoder();
     const enc = te.encode(testStr);
-    buffer = Buffer.concat([Buffer.from([enc.length]),Buffer.from(enc)]);
-    offset = 0;
+    let buffer = Buffer.concat([Buffer.from([enc.length]),Buffer.from(enc)]);
+    let offset = 0;
     ({decoded, offset} = decodeField(testField, buffer, offset));
     expect(decoded.value).to.equal(testStr);
   });
@@ -428,10 +450,10 @@ describe('#cbc/field/data', () => {
     type: "dataField",
     size: 32,
   };
-  let buffer = Buffer.from([0]);
-  let offset = 0;
   
   it('should encode basic blob', () => {
+    let buffer = Buffer.from([]);
+    let offset = 0;
     const startOff = offset;
     const testVal = Buffer.from([1, 2, 3, 4]);
     const lBytes = testVal.length < 128 ? 1 : 2;
@@ -442,8 +464,8 @@ describe('#cbc/field/data', () => {
   });
 
   it('should pad a fixed length blob', () => {
-    buffer = Buffer.from([0]);
-    offset = 0;
+    let buffer = Buffer.from([]);
+    let offset = 0;
     testField.fixed = true;
     const startOff = offset;
     const testVal = Buffer.from([1, 2, 3, 4]);
@@ -453,9 +475,9 @@ describe('#cbc/field/data', () => {
     expect(Buffer.compare(buffer.slice(lBytes, lBytes + testVal.length), testVal)).to.equal(0);
   });
 
-  it('should append data on a non-byte boundary', () => {
-    buffer = Buffer.from([0]);
-    offset = 0;
+  it('should append data on a non-byte boundary (run separate for buffer.length)', () => {
+    let buffer = Buffer.from([]);
+    let offset = 0;
     const startOff = 3;
     const testVal = Buffer.from([1, 2, 3, 4]);
     const lBytes = testVal.length < 128 ? 1 : 2;
@@ -465,10 +487,10 @@ describe('#cbc/field/data', () => {
     expect(Buffer.compare(bitwise.buffer.create(eBits), testVal)).to.equal(0);
   });
 
-  it('should decode a data field', () => {
+  it('should decode a data field (run separate for buffer.length)', () => {
     const testVal = Buffer.from([1,2,3,4]);
-    buffer = Buffer.concat([Buffer.from([testVal.length]), testVal]);
-    offset = 0;
+    let buffer = Buffer.concat([Buffer.from([testVal.length]), testVal]);
+    let offset = 0;
     ({decoded,offset} = decodeField(testField, buffer, offset));
     expect(Buffer.compare(decoded.value, testVal)).to.equal(0);
   });
@@ -527,14 +549,11 @@ describe('#cbc/field/array', () => {
     testCase2d,
   ];
   
-  let buffer = Buffer.from([0]);
-  let offset = 0;
-
   it('should encode an array', () => {
     for (const tc of testCases) {
       const { fieldDef, encoded, decoded } = tc;
-      buffer = Buffer.from([0]);
-      offset = 0;
+      let buffer = Buffer.from([0]);
+      let offset = 0;
       ({buffer, offset} = encodeField(fieldDef, decoded.value, buffer, offset));
       expect(Buffer.compare(buffer, Buffer.from(encoded))).to.equal(0);
     }
@@ -543,8 +562,8 @@ describe('#cbc/field/array', () => {
   it('should decode an array', () => {
     for (const tc of testCases) {
       const { fieldDef, encoded, decoded: expected } = tc;
-      buffer = Buffer.from(encoded);
-      offset = 0;
+      let buffer = Buffer.from(encoded);
+      let offset = 0;
       let decoded;
       ({decoded, offset} = decodeField(fieldDef, buffer, offset));
       decoded.value.forEach((value, i) => {
@@ -668,7 +687,7 @@ describe('#cbc/field/bitmaskarray', () => {
   
   const testCases = [testCase1,];
   
-  it('should encode a bitkeylist', () => {
+  it('should encode a bitmaskarray', () => {
     for (const tc of testCases) {
       const { fieldDef, encoded, decoded } = tc;
       let buffer = Buffer.from([0]);
@@ -678,7 +697,7 @@ describe('#cbc/field/bitmaskarray', () => {
     }
   });
   
-  it('should decode a bitkeylist', () => {
+  it('should decode a bitmaskarray', () => {
     for (const tc of testCases) {
       const { fieldDef, encoded, decoded: expected } = tc;
       let buffer = Buffer.from(encoded);
@@ -701,17 +720,28 @@ describe('#cbc/field/bitmaskarray', () => {
 
 });
 
-function stringifyBigInt(obj) {
+function stringifyBigInt_(obj) {
   return JSON.parse(JSON.stringify(obj, (k, v) =>
       typeof v === 'bigint' ? v.toString() : v
   ));
 }
 
-describe('#cbc/message', function () {
+function validateObject_(expected, actual) {
+  const s1 = stringifyBigInt_(expected);
+  const s2 = stringifyBigInt_(actual);
+  const delta = [];
+  for (let i = 0; i < s1.length; i++) {
+    if (s1[i] !== s2[i])
+      delta.push(i);
+  }
+  return delta.length === 0;
+}
+
+describe('#cbc/message', () => {
   
-  const testMessage = {
+  const testMessageCodec = {
     direction: 'UPLINK',
-    messageKey: 1,
+    messageKey: 49152,
     name: 'testMessage',
     fields: [
       {
@@ -741,54 +771,41 @@ describe('#cbc/message', function () {
       }
     ]
   }
-
-  it('should encode a message', () => {
-    const decoded = {
-      direction: 'UPLINK',
-      messageKey: 1,
-      name: 'testMessage',
-      fields: {
-        imsi: 90180020000364n,
-        location: {
-            latitude: 33.126,
-            longitude: -117.265,
-        }
+  const testMessage = {
+    direction: testMessageCodec.direction,
+    messageKey: testMessageCodec.messageKey,
+    name: testMessageCodec.name,
+    fields: {
+      imsi: 999999999999999n,
+      location: {
+          latitude: 33.126,
+          longitude: -117.265,
       }
-    };
-    const encoded = encodeMessage(decoded, testMessage, true);
-    expect(Buffer.isBuffer(encoded)).to.equal(true);
-    const reread = decodeMessage(encoded, testMessage, true);
-    const s1 = stringifyBigInt(reread);
-    const s2 = stringifyBigInt(decoded);
-    const delta = [];
-    for (let i = 0; i < s1.length; i++) {
-      if (s1[i] !== s2[i])
-        delta.push(i);
     }
-    expect(delta).to.have.length(0);
+  };
+
+  it('should encode/decode a non-CoAP message', () => {
+    const encoded = encodeMessage(testMessage, testMessageCodec, true);
+    expect(Buffer.isBuffer(encoded)).to.equal(true);
+    const decoded = decodeMessage(encoded, testMessageCodec, true);
+    expect(validateObject_(testMessage, decoded)).to.equal(true);
   });
 
   it('should encode a CoAP message', () => {
-    const msgCodec = require('./codecs/ntn-poc-cbc-coap.json').messages[0];
-    const decoded = {
-      direction: msgCodec.direction,
-      messageKey: msgCodec.messageKey,
-      name: msgCodec.name,
-      fields: {
-        coapPayloadMarker: 0xFF,
-        imsi: 999999999999999n,
-        secOfDay: 0,
-        tac: 0xABCD,
-        rsrp: 99,
-        rsrq: 31,
-        sinr: 31,
-      }
-    }
-    // let imsiEncoded = [241, 175, 212, 152, 207, 255, 224];
-    const encoded = encodeMessage(decoded, msgCodec, true);
-    expect(Buffer.isBuffer(encoded)).equals(true);
-    const {decoded: readback} = decodeMessage(encoded, msgCodec, true);
-    expect(decoded).to.be.an('object');
+    let buffer = Buffer.from([]);
+    let offset = 0;
+    ({ buffer, offset } = appendBits(int2bits(1, 2), buffer, offset));   // Ver
+    ({ buffer, offset } = appendBits(int2bits(1, 2), buffer, offset));   // T
+    ({ buffer, offset } = appendBits(int2bits(0, 4), buffer, offset));   // TKL
+    ({ buffer, offset } = appendBits(int2bits(0, 3), buffer, offset));   // Code.Class
+    ({ buffer, offset } = appendBits(int2bits(2, 5), buffer, offset));   // Code.Method POST
+    ({ buffer, offset } = appendBits(int2bits(testMessage.messageKey, 16), buffer, offset));   // Message ID
+    ({ buffer, offset } = appendBits(int2bits(255, 8), buffer, offset));   // Payload Marker
+    const payload = encodeMessage(testMessage, testMessageCodec, true, true);
+    const encoded = Buffer.concat([buffer, payload]);
+    console.warn(encoded.toString('hex'));   // allow capture for integration test
+    const decoded = decodeMessage(encoded, testMessageCodec, true, true);
+    expect(validateObject_(testMessage, decoded)).to.equal(true);
   });
 
 });
