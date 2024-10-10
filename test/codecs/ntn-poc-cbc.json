@@ -7,7 +7,7 @@
             "description": "A basic health/config status message for NB-NTN devices. Minimum size 9 bytes. Maximum size 249 bytes.",
             "direction": "UPLINK",
             "name": "heartbeat",
-            "messageKey": 4097,
+            "messageKey": 65279,
             "fields": [
                 {
                     "name": "imsi",
@@ -53,29 +53,36 @@
                     "size": 16
                 },
                 {
-                    "name": "rsrp",
-                    "type": "int",
-                    "description": "- 138 dBm floor; 99 means unknown",
-                    "size": 9
-                },
-                {
-                    "name": "rsrq",
-                    "type": "int",
-                    "description": "- 32 dB floor; 31 means unknown",
-                    "size": 6
-                },
-                {
-                    "name": "sinr",
-                    "type": "int",
-                    "description": "- 32 dB range; 31 means unknown",
-                    "size": 6
-                },
-                {
-                    "name": "rssi",
-                    "type": "int",
-                    "description": "- 110 dBm floor; 99 means unknown",
-                    "size": 9,
-                    "optional": true
+                    "name": "signal",
+                    "type": "struct",
+                    "fields": [
+                        {
+                            "name": "rsrp",
+                            "type": "int",
+                            "description": "- 138 dBm floor; 99 means unknown",
+                            "size": 9
+                        },
+                        {
+                            "name": "rsrq",
+                            "type": "int",
+                            "description": "- 32 dB floor; 31 means unknown",
+                            "size": 6
+                        },
+                        {
+                            "name": "sinr",
+                            "type": "int",
+                            "description": "- 32 dB floor; 31 means unknown",
+                            "size": 6
+                        },
+                        {
+                            "name": "rssi",
+                            "type": "int",
+                            "description": "- 110 dBm floor; 99 means unknown",
+                            "size": 9,
+                            "optional": true
+                        }
+        
+                    ]
                 },
                 {
                     "name": "psmConfig",
