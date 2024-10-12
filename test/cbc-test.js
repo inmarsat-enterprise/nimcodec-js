@@ -1,3 +1,4 @@
+require('dotenv').config();
 const chai = require('chai');
 chai.config.includeStack = false;
 const expect = chai.expect;
@@ -739,50 +740,34 @@ function validateObject_(expected, actual) {
 
 describe('#cbc/message', () => {
   
-  const testMessageCodec = {
-    direction: 'UPLINK',
-    messageKey: 49152,
-    name: 'testMessage',
-    fields: [
-      {
-        name: 'imsi',
-        type: 'uint',
-        size: 50,
-      },
-      {
-        name: 'location',
-        type: 'struct',
-        fields: [
-          {
-            name: 'latitude',
-            type: 'int',
-            size: 18,
-            encalc: 'v*1000',
-            decalc: 'v/1000',
-          },
-          {
-            name: 'longitude',
-            type: 'int',
-            size: 19,
-            encalc: 'v*1000',
-            decalc: 'v/1000',
-          }
-        ]
-      }
-    ]
+  let codecFilePath = './codecs/ntn-poc-cbc.json';
+  if (process.env.VIASAT_KEY)
+    codecFilePath = codecFilePath.replace('.json', '-secret.json');
+  const testMessageCodec = require(codecFilePath);
+  const msgCodec = testMessageCodec.messages[0];
+  const locFields = msgCodec.fields.filter(f => f.name === 'location')[0].fields;
+  for (const f of locFields) {
+    f.encalc = 'v*1000';
   }
   const testMessage = {
-    direction: testMessageCodec.direction,
-    messageKey: testMessageCodec.messageKey,
-    name: testMessageCodec.name,
+    direction: msgCodec.direction,
+    messageKey: msgCodec.messageKey,
+    name: msgCodec.name,
     fields: {
-      imsi: 999999999999999n,
+      imsi: process.env.TEST_IMSI ? BigInt(process.env.TEST_IMSI) : 999999999999999n,
+      secOfDay: 0,
       location: {
           latitude: 33.126,
           longitude: -117.265,
+      },
+      tac: 0xABCD,
+      signal: {
+        rsrp: 99,
+        rsrq: 31,
+        sinr: 31
       }
     }
-  };
+  }
 
   it('should encode/decode a non-CoAP message', () => {
     const encoded = encodeMessage(testMessage, testMessageCodec, true);
