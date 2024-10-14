@@ -29,6 +29,7 @@
   "devDependencies": {
     "@types/node": "^22.7.4",
     "chai": "^4.4.1",
+    "coap-packet": "^1.1.1",
     "jaguarjs-jsdoc": "^1.1.0",
     "jsdoc": "^4.0.2",
     "mocha": "^10.2.0",

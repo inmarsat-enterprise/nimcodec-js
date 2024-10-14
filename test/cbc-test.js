@@ -5,6 +5,7 @@ const expect = chai.expect;
 const rewire = require('rewire');
 const bitwise = require('bitwise');
 const mathjs = require('mathjs');
+const coap = require('coap-packet');
 
 const { cbc } = require('../lib');
 const { decodeMessage, encodeMessage, isValidCodec } = cbc;
@@ -769,27 +770,28 @@ describe('#cbc/message', () => {
     }
   }
 
-  it('should encode/decode a non-CoAP message', () => {
+  it('should encode/decode a non-CoAP message with first 2 bytes messageKey', () => {
     const encoded = encodeMessage(testMessage, testMessageCodec, true);
     expect(Buffer.isBuffer(encoded)).to.equal(true);
+    const encodedMsgKey = encoded[0] << 8 + encoded[1];
+    expect(encodedMsgKey).to.equal(testMessage.messageKey);
     const decoded = decodeMessage(encoded, testMessageCodec, true);
     expect(validateObject_(testMessage, decoded)).to.equal(true);
   });
 
-  it('should encode a CoAP message', () => {
-    let buffer = Buffer.from([]);
-    let offset = 0;
-    ({ buffer, offset } = appendBits(int2bits(1, 2), buffer, offset));   // Ver
-    ({ buffer, offset } = appendBits(int2bits(1, 2), buffer, offset));   // T
-    ({ buffer, offset } = appendBits(int2bits(0, 4), buffer, offset));   // TKL
-    ({ buffer, offset } = appendBits(int2bits(0, 3), buffer, offset));   // Code.Class
-    ({ buffer, offset } = appendBits(int2bits(2, 5), buffer, offset));   // Code.Method POST
-    ({ buffer, offset } = appendBits(int2bits(testMessage.messageKey, 16), buffer, offset));   // Message ID
-    ({ buffer, offset } = appendBits(int2bits(255, 8), buffer, offset));   // Payload Marker
+  it('should encode a CoAP message with messageKey as Message ID', () => {
     const payload = encodeMessage(testMessage, testMessageCodec, true, true);
-    const encoded = Buffer.concat([buffer, payload]);
+    const coapMessage = {
+      // token: Buffer.from([]),
+      code: 'POST',
+      messageId: testMessage.messageKey,
+      // options: [],
+      payload: payload,
+    };
+    const encoded = coap.generate(coapMessage);
     console.warn(encoded.toString('hex'));   // allow capture for integration test
-    const decoded = decodeMessage(encoded, testMessageCodec, true, true);
+    const coapPayload = coap.parse(encoded).payload;
+    const decoded = decodeMessage(coapPayload, testMessageCodec, true, coapMessage.messageId);
     expect(validateObject_(testMessage, decoded)).to.equal(true);
   });
 
