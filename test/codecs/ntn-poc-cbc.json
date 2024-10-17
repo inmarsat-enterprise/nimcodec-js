@@ -1,6 +1,6 @@
 {
     "application": "viasatNtnProofOfConcept",
-    "version": "1.0",
+    "version": "1.1",
     "description": "Viasat NB-NTN proof of concept for efficient binary data transport",
     "messages": [
         {
@@ -47,10 +47,10 @@
                     ]
                 },
                 {
-                    "name": "tac",
-                    "description": "NB-NTN Tracking Area Code",
+                    "name": "cellId",
+                    "description": "NB-NTN Cell Identifier",
                     "type": "uint",
-                    "size": 16
+                    "size": 32
                 },
                 {
                     "name": "signal",
@@ -101,6 +101,13 @@
                         { "name": "edrxCycle", "type": "bitmask", "size": 4 },
                         { "name": "edrxPtw", "type": "bitmask", "size": 4 }
                     ]
+                },
+                {
+                    "name": "counter",
+                    "description": "Message counter wraps after 65535",
+                    "type": "uint",
+                    "size": 16,
+                    "optional": true
                 }
             ]
         }

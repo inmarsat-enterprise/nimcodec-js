@@ -761,17 +761,19 @@ describe('#cbc/message', () => {
           latitude: 33.126,
           longitude: -117.265,
       },
-      tac: 0xABCD,
+      cellId: 0x020362D,
       signal: {
         rsrp: 99,
         rsrq: 31,
         sinr: 31
-      }
+      },
+      counter: 1,
     }
   }
 
   it('should encode/decode a non-CoAP message with first 2 bytes messageKey', () => {
     const encoded = encodeMessage(testMessage, testMessageCodec, true);
+    console.warn(encoded.toString('hex'));   // allow capture for integration test
     expect(Buffer.isBuffer(encoded)).to.equal(true);
     const encodedMsgKey = encoded[0] << 8 + encoded[1];
     expect(encodedMsgKey).to.equal(testMessage.messageKey);
