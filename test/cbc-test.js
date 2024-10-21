@@ -763,13 +763,14 @@ describe('#cbc/message', () => {
       },
       cellId: 0x020362D,
       signal: {
-        rsrp: 99,
-        rsrq: 31,
-        sinr: 31
+        rsrp: -129,
+        rsrq: -9,
+        sinr: 2,
+        rssi: -119,
       },
       counter: 1,
     }
-  }
+  };
 
   it('should encode/decode a non-CoAP message with first 2 bytes messageKey', () => {
     const encoded = encodeMessage(testMessage, testMessageCodec, true);
