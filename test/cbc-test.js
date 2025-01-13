@@ -546,6 +546,37 @@ describe('#cbc/field/array', () => {
     },
   };
 
+  const testCaseOptionalField = {
+    fieldDef: {
+      name: 'arrayWithOptional',
+      type: 'array',
+      size: 128,
+      fields: [
+        {
+          name: 'parameterName',
+          type: 'string',
+          size: 16
+        },
+        {
+          name: 'parameterValue',
+          type: 'uint',
+          size: 32
+        },
+        {
+          name: 'parameterDescription',
+          type: 'string',
+          size: 100,
+          optional: true,
+        }
+      ],
+    },
+    decoded: {
+      name: 'arrayWithOptional',
+      type: 'array',
+      value: [{parameterName: 'testParam', parameterValue: 1},],
+    },
+  };
+
   const testCases = [
     testCase1d,
     testCase2d,
@@ -582,6 +613,14 @@ describe('#cbc/field/array', () => {
     }
   });
 
+  it('should encode and decode an array with optional field', () => {
+    const { fieldDef, decoded: expected } = testCaseOptionalField;
+    let buffer = Buffer([]);
+    let { buffer: encoded } = encodeField(fieldDef, expected.value, buffer, 0);
+    let { decoded } = decodeField(fieldDef, encoded, 0);
+    expect(JSON.stringify(decoded)).to.equal(JSON.stringify(expected));
+  });
+
 });
 
 describe('#cbc/field/struct', () => {
@@ -602,6 +641,12 @@ describe('#cbc/field/struct', () => {
         size: 19,
         encalc: 'v*1000',
         decalc: 'v/1000',
+      },
+      {
+        name: 'altitude',
+        type: 'int',
+        size: 9,
+        optional: true,
       }
     ]
   };
