@@ -1,6 +1,6 @@
 {
   "name": "nimcodec",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Encoder/decoder for satellite IoT using Non-IP Messages",
   "main": "./lib/index.js",
   "scripts": {
