@@ -768,9 +768,9 @@ describe('#cbc/field/bitmaskarray', () => {
 });
 
 function stringifyBigInt_(obj) {
-  return JSON.parse(JSON.stringify(obj, (k, v) =>
+  return JSON.stringify(obj, (k, v) =>
       typeof v === 'bigint' ? v.toString() : v
-  ));
+  );
 }
 
 function validateObject_(expected, actual) {
