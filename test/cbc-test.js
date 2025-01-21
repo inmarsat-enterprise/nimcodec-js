@@ -799,7 +799,7 @@ describe('#cbc/message', () => {
     direction: msgCodec.direction,
     messageKey: msgCodec.messageKey,
     name: msgCodec.name,
-    fields: {
+    value: {
       imsi: process.env.TEST_IMSI ? BigInt(process.env.TEST_IMSI) : 999999999999999n,
       secOfDay: 0,
       location: {
