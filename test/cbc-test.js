@@ -284,6 +284,29 @@ describe('#cbc/field/int', () => {
     expect(decoded.value).is.equal(testVal);
   });
 
+  it('should decode 32-bit signed integers', () => {
+    testField.size = 32;
+    const testVals = ['002e7001', 'fffe23ea'];
+    const expected = [3043329,-121878];
+    for (const [i, testVal] of testVals.entries()) {
+      let buffer = Buffer.from(testVal, 'hex');
+      let {decoded} = decodeField(testField, buffer, 0);
+      expect(decoded.value).is.equal(expected[i]);
+    }
+  });
+
+  it('should encode 32-bit signed integers', () => {
+    testField.size = 32;
+    const testVals = [3043329,-121878];
+    const expected = ['002e7001', 'fffe23ea'];
+    for (const [i, testVal] of testVals.entries()) {
+      let buffer = Buffer.from([0]);
+      ({buffer} = encodeField(testField, testVal, buffer, 0));
+      expect(buffer.toString('hex')).to.equal(expected[i]);
+      expect(bitwise.buffer.readInt(buffer, 0, testField.size)).to.equal(testVal);
+    }
+  });
+
 });
 
 describe('#cbc/field/uint', () => {
