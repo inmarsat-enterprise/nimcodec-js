@@ -1,7 +1,7 @@
 const chai = require('chai');
 chai.config.includeStack = false;
 const expect = chai.expect;
-// const should = chai.should();
+const should = chai.should();
 // const rewire = require('rewire');
 const bitwise = require('bitwise');
 
@@ -21,12 +21,14 @@ describe('#nimo/importCodec()', function() {
     const converted = importCodec(idpmsgPath);
     expect(converted).to.be.an('Object').with.key('services');
     for (const s of converted.services) {
-      s.should.include.all.keys(serviceKeys);
+      serviceKeys.forEach(k => s.should.have.property(k));
       if (s.mobileOriginatedMessages) {
         for (const m of s.mobileOriginatedMessages) {
-          m.should.include.all.keys(messageKeys);
+          messageKeys.forEach(k => m.should.have.property(k));
+          // m.should.include.all.keys(messageKeys);
           for (const f of m.fields) {
-            f.should.include.all.keys(fieldKeys);
+            fieldKeys.forEach(k => f.should.have.property(k));
+            // f.should.include.all.keys(fieldKeys);
           }
         }
       }
@@ -245,16 +247,20 @@ describe('#nimo/Uint Field', function () {
 });
 
 describe('#nimo/String Field', function() {
-  const testField = {
-    name: "variableString",
-    type: "stringField",
-    size: 32,
-  };
-  let buffer = Buffer.from([0]);
+  let testField;
+  let buffer = Buffer.from([]);
   let offset = 0;
+
+  beforeEach(() => {
+    testField = {
+      name: "variableString",
+      type: "stringField",
+      size: 32,
+    };
+  });
   
   it('should encode a basic string', function() {
-    buffer = Buffer.from([0]);
+    buffer = Buffer.from([]);
     offset = 0;
     const startOff = offset;
     const testVal = 'Test string';
@@ -266,7 +272,7 @@ describe('#nimo/String Field', function() {
   });
 
   it('should pad a fixed length string', function() {
-    buffer = Buffer.from([0]);
+    buffer = Buffer.from([]);
     offset = 0;
     testField.fixed = true;
     const startOff = offset;
@@ -278,7 +284,7 @@ describe('#nimo/String Field', function() {
   });
 
   it('should append a string a non-byte boundary', function() {
-    buffer = Buffer.from([0]);
+    buffer = Buffer.from([]);
     offset = 0;
     const startOff = 3;
     const testVal = 'Test string';
@@ -302,13 +308,17 @@ describe('#nimo/String Field', function() {
 });
 
 describe('#nimo/Data Field', function() {
-  const testField = {
-    name: "variableData",
-    type: "dataField",
-    size: 32,
-  };
-  let buffer = Buffer.from([0]);
+  let testField;
+  let buffer = Buffer.from([]);
   let offset = 0;
+
+  beforeEach(() => {
+    testField = {
+      name: "variableData",
+      type: "dataField",
+      size: 32,
+    };
+  });
   
   it('should encode basic blob', function() {
     const startOff = offset;
@@ -321,7 +331,7 @@ describe('#nimo/Data Field', function() {
   });
 
   it('should pad a fixed length blob', function() {
-    buffer = Buffer.from([0]);
+    buffer = Buffer.from([]);
     offset = 0;
     testField.fixed = true;
     const startOff = offset;
@@ -333,7 +343,7 @@ describe('#nimo/Data Field', function() {
   });
 
   it('should append data on a non-byte boundary', function() {
-    buffer = Buffer.from([0]);
+    buffer = Buffer.from([]);
     offset = 0;
     const startOff = 3;
     const testVal = Buffer.from([1, 2, 3, 4]);

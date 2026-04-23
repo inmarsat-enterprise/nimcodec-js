@@ -415,11 +415,15 @@ describe('#cbc/field/calc', () => {
 });
 
 describe('#cbc/field/string', () => {
-  const testField = {
-    name: "variableString",
-    type: "stringField",
-    size: 32,
-  };
+  let testField;
+
+  beforeEach(() => {
+    testField = {
+      name: "variableString",
+      type: "stringField",
+      size: 32,
+    };
+  });
   
   it('should encode a basic string', () => {
     let buffer = Buffer.from([0]);
@@ -470,11 +474,15 @@ describe('#cbc/field/string', () => {
 });
 
 describe('#cbc/field/data', () => {
-  const testField = {
-    name: "variableData",
-    type: "dataField",
-    size: 32,
-  };
+  let testField;
+
+  beforeEach(() => {
+    testField = {
+      name: "variableData",
+      type: "dataField",
+      size: 32,
+    };
+  });
   
   it('should encode basic blob', () => {
     let buffer = Buffer.from([]);
@@ -844,7 +852,7 @@ describe('#cbc/message', () => {
     const encoded = encodeMessage(testMessage, testMessageCodec, true);
     console.warn(encoded.toString('hex'));   // allow capture for integration test
     expect(Buffer.isBuffer(encoded)).to.equal(true);
-    const encodedMsgKey = encoded[0] << 8 + encoded[1];
+    const encodedMsgKey = (encoded[0] << 8) + encoded[1];
     expect(encodedMsgKey).to.equal(testMessage.messageKey);
     const decoded = decodeMessage(encoded, testMessageCodec, true);
     expect(validateObject_(testMessage, decoded)).to.equal(true);
