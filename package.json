@@ -1,8 +1,21 @@
 {
   "name": "nimcodec",
+  "type": "commonjs",
   "version": "0.5.5",
   "description": "Encoder/decoder for satellite IoT using Non-IP Messages",
   "main": "./lib/index.js",
+  "types": "./lib/types.d.ts",
+  "exports": {
+    ".": "./lib/index.js",
+    "./cbc": "./lib/codecs/cbc/index.js",
+    "./nimo": "./lib/codecs/nimo/index.js"
+  },
+  "files": [
+    "lib",
+    "types.d.ts",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "test": "mocha --reporter spec"
   },
@@ -12,7 +25,11 @@
     "satellite",
     "Viasat",
     "Inmarsat",
-    "Orbcomm"
+    "Orbcomm",
+    "D2D",
+    "NTN",
+    "NB-NTN",
+    "NB-IOT"
   ],
   "repository": {
     "type": "git",
