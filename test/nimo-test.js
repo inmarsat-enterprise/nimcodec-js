@@ -526,10 +526,10 @@ const tcLocation = {
   isMo: true,
   encoded: [0, 72, 1, 41, 117, 182, 221, 71, 130, 0, 90, 1, 99, 252, 107],
   decoded: {
-    name: 'location',
+    name: 'locationReport',
     serviceKey: 0,
     messageKey: 72,
-    fields: {
+    value: {
       fixStatus: 'Valid',
       latitude: 2717110,
       longitude: -4550908,
@@ -539,6 +539,53 @@ const tcLocation = {
       dayOfMonth: 31,
       minuteOfDay: 1131,
     },
+  },
+  decodedLegacy: {
+    name: 'location',
+    SIN: 0,
+    MIN: 72,
+    fields: [
+      {
+        name: 'fixStatus',
+        value: '3',
+        type: 'enum',
+      },
+      {
+        name: 'latitude',
+        value: '2717110',
+        type: 'int',
+      },
+      {
+        name: 'longitude',
+        value: '-4550908',
+        type: 'int',
+      },
+      {
+        name: 'altitude',
+        value: '90',
+        type: 'int',
+      },
+      {
+        name: 'speed',
+        value: '1',
+        type: 'uint',
+      },
+      {
+        name: 'heading',
+        value: '99',
+        type: 'int',
+      },
+      {
+        name: 'dayOfMonth',
+        value: '31',
+        type: 'uint',
+      },
+      {
+        name: 'minuteOfDay',
+        value: '1131',
+        type: 'uint',
+      },
+    ],
   },
 };
 const tcTxMetricsData = {
@@ -552,7 +599,7 @@ const tcTxMetricsData = {
     name: 'txMetricsReport',
     serviceKey: 0,
     messageKey: 100,
-    fields: {
+    value: {
       period: 'LastFullDay',
       txMetrics: [
         { 'ack': {'packetsTotal': 3, 'packetsSuccess': 3, 'packetsFailed': 0} },
@@ -560,6 +607,69 @@ const tcTxMetricsData = {
       ],
     },
   },
+  decodedLegacy: {
+    name: 'txMetricsReport',
+    SIN: 0,
+    MIN: 100,
+    fields: [
+      {
+        name: 'period',
+        value: '5',
+        type: 'enum',
+      },
+      {
+        name: 'maskPacketTypes',
+        value: '3',
+        type: 'uint',
+      },
+      {
+        name: 'packetDetails',
+        type: 'array',
+        elements: [
+          {
+            index: 0,
+            fields: [
+              {
+                name: 'packetsTotal',
+                type: 'uint',
+                value: '3',
+              },
+              {
+                name: 'packetsSuccess',
+                type: 'uint',
+                value: '3',
+              },
+              {
+                name: 'packetsFailed',
+                type: 'uint',
+                value: '0',
+              }
+            ],
+          },
+          {
+            index: 1,
+            fields: [
+              {
+                name: 'packetsTotal',
+                type: 'uint',
+                value: '3',
+              },
+              {
+                name: 'packetsSuccess',
+                type: 'uint',
+                value: '3',
+              },
+              {
+                name: 'packetsFailed',
+                type: 'uint',
+                value: '0',
+              }
+            ],
+          },
+        ],
+      }
+    ],
+  }
 };
 const testMessages = [
   // tcLocation,
@@ -568,7 +678,8 @@ const testMessages = [
 
 describe('#nimo/Message', function () {
   
-  const messageKeys = ['name', 'serviceKey', 'messageKey', 'fields'];
+  const messageKeys = ['name', 'serviceKey', 'messageKey', 'value'];
+  const legacyKeys = ['name', 'SIN', 'MIN', 'fields'];
 
   context('with idpmsg XML file', function() {
     it('should decode the test messages', function() {
@@ -576,11 +687,11 @@ describe('#nimo/Message', function () {
         const { encoded, decoded: expected, isMo } = tc;
         const decoded = decodeMessage(encoded, idpmsgPath, isMo);
         expect(decoded).to.be.an('Object').with.keys(messageKeys);
-        for (const [key, value] of Object.entries(decoded.fields)) {
+        for (const [key, value] of Object.entries(decoded.value)) {
           if (!Array.isArray(value)) {
-            expect(expected.fields[key]).to.equal(value);
+            expect(expected.value[key]).to.equal(value);
           } else {
-            const expArray = expected.fields[key];
+            const expArray = expected.value[key];
             value.forEach((row, i) => {
               for (const [k, v] of Object.entries(Object.values(row)[0])) {
                 const expObj = Object.values(expArray[i])[0];
@@ -599,11 +710,11 @@ describe('#nimo/Message', function () {
         const { codecKey, encoded, decoded: expected, isMo } = tc;
         const decoded = decodeMessage(encoded, codecKey, isMo);
         expect(decoded).to.be.an('Object').with.keys(messageKeys);
-        for (const [key, value] of Object.entries(decoded.fields)) {
+        for (const [key, value] of Object.entries(decoded.value)) {
           if (!Array.isArray(value)) {
-            expect(expected.fields[key]).to.equal(value);
+            expect(expected.value[key]).to.equal(value);
           } else {
-            const expArray = expected.fields[key];
+            const expArray = expected.value[key];
             value.forEach((row, i) => {
               for (const [k, v] of Object.entries(Object.values(row)[0])) {
                 const expObj = Object.values(expArray[i])[0];
