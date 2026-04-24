@@ -6,9 +6,18 @@
   "main": "./lib/index.js",
   "types": "./lib/types.d.ts",
   "exports": {
-    ".": "./lib/index.js",
-    "./cbc": "./lib/codecs/cbc/index.js",
-    "./nimo": "./lib/codecs/nimo/index.js"
+    ".": {
+      "types": "./lib/types.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./cbc": {
+      "types": "./lib/types.d.ts",
+      "default": "./lib/codecs/cbc/index.js"
+    },
+    "./nimo": {
+      "types": "./lib/types.d.ts",
+      "default": "./lib/codecs/nimo/index.js"
+    }
   },
   "files": [
     "lib",
