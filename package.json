@@ -1,7 +1,7 @@
 {
   "name": "nimcodec",
   "type": "commonjs",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Encoder/decoder for satellite IoT using Non-IP Messages",
   "main": "./lib/index.js",
   "types": "./lib/types.d.ts",
